@@ -2,8 +2,6 @@ package birch.irc;
 
 import java.text.MessageFormat;
 
-import birch.irc.feature.urlgrabber.Url;
-
 public class IrcMessage {
 
     private IrcMessage() {

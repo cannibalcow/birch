@@ -1,5 +1,6 @@
 package birch.irc.domain;
 
+import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +21,11 @@ public class TriggerLine {
 
     public IrcPrivMessage getIrcPrivMessage() {
         return ircPrivMessage;
+    }
+    
+    public String getMessageWithoutTrigger() {
+        String str = ircPrivMessage.getMessage();
+        return str.replaceAll(MessageFormat.format("^\\!{0} ", trigger), "");
     }
 
     public static TriggerLine fromPrivMsg(IrcPrivMessage privmsg) {
