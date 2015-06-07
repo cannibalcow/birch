@@ -37,7 +37,10 @@ public class IrcLineAnalyzer {
                 responses.addAll(res);
         }
 
-        responses.forEach(response -> writer.println(response));
+        responses.forEach(response -> {
+            System.out.println("> " + response);
+            writer.println(response);
+        });
     }
 
     public static boolean isTriggerLine(String line) {

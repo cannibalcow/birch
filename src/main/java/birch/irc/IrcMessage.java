@@ -46,4 +46,8 @@ public class IrcMessage {
     public static String sendPrivMessage(String receiver, String message) {
         return MessageFormat.format("PRIVMSG {0} :{1}", receiver, message);
     }
+
+    public static String disconnect(String quitMessage) {
+        return MessageFormat.format("QUIT {0}", quitMessage);
+    }
 }

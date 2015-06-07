@@ -1,4 +1,4 @@
-package birch.rest;
+package birch.controller.rest;
 
 import java.util.List;
 import java.util.Map;

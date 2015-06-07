@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.social.twitter.api.CursoredList;
 import org.springframework.social.twitter.api.Twitter;
-import org.springframework.social.twitter.api.TwitterProfile;
 import org.springframework.stereotype.Component;
 
 import birch.irc.IrcMessage;
@@ -24,10 +22,6 @@ public class TwitterFeature implements BotFeature{
     @Autowired
     public TwitterFeature(Twitter twitter) {
         this.twitter = twitter;
-        CursoredList<TwitterProfile> followers = this.twitter.friendOperations().getFollowers();
-        
-        followers.forEach(follower -> System.out.println(follower.getName()));
-        
         this.triggers = new ArrayList<String>();
         triggers.add(TWEET);
     }

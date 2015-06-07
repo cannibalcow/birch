@@ -29,6 +29,7 @@ public class IrcConnectionPool implements ConnectionPool {
         this.connections.add(connection);
         if (connection instanceof IrcConnection) {
             Thread thread = new Thread((IrcConnection) connection);
+            thread.setName(((IrcConnection) connection).getNick() + "_" +((IrcConnection) connection).getServer());
             thread.start();
         }
     }

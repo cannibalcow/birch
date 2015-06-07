@@ -76,11 +76,9 @@ public class IrcConnection implements Connection, Runnable {
             try {
                 String line = buf.readLine();
 
-                if (isPing(line)) {
-                    send(IrcMessage.pongReply(line));
-                }
-
+                // TODO: remove
                 System.out.println("< " + line);
+
                 if (registerd == false) {
                     register();
                     registerd = true;
@@ -96,7 +94,12 @@ public class IrcConnection implements Connection, Runnable {
                 connected = false;
             }
         }
-        log.info("End of life!");
+        
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean registerWriter() {
@@ -107,14 +110,6 @@ public class IrcConnection implements Connection, Runnable {
             return false;
         }
         return true;
-    }
-
-    private boolean isPing(String row) {
-        if (row.startsWith("PING")) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private void register() {
@@ -134,6 +129,7 @@ public class IrcConnection implements Connection, Runnable {
     public void disconnect() {
         log.info(String.format("Disconnecting bot %s from server %s", nick,
                 server));
+        send(IrcMessage.disconnect("Birch adios! " + nick));
         this.connected = false;
     }
 
