@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import birch.irc.IrcMessage;
+import birch.irc.IrcCommandMessage;
 import birch.irc.domain.BotFeature;
 import birch.irc.domain.TriggerLine;
 
@@ -26,7 +26,7 @@ public class PingFeature implements BotFeature {
     @Override
     public String handle(String line) {
         if (isPing(line)) {
-            return IrcMessage.pongReply(line);
+            return IrcCommandMessage.pongReply(line);
         } else {
             return null;
         }

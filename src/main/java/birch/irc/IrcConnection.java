@@ -113,7 +113,7 @@ public class IrcConnection implements Connection, Runnable {
     }
 
     private void register() {
-        send(IrcMessage.registerNick(nick));
+        send(IrcCommandMessage.registerNick(nick));
 
         // TODO: wtf
         try {
@@ -122,14 +122,14 @@ public class IrcConnection implements Connection, Runnable {
             e.printStackTrace();
         }
 
-        send(IrcMessage.registerUser(nick, mode, realName, user));
+        send(IrcCommandMessage.registerUser(nick, mode, realName, user));
     }
 
     @Override
     public void disconnect() {
         log.info(String.format("Disconnecting bot %s from server %s", nick,
                 server));
-        send(IrcMessage.disconnect("Birch adios! " + nick));
+        send(IrcCommandMessage.disconnect("Birch adios! " + nick));
         this.connected = false;
     }
 

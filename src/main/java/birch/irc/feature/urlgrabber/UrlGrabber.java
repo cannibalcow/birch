@@ -9,14 +9,14 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import birch.irc.IrcMessage;
+import birch.irc.IrcCommandMessage;
 import birch.irc.IrcPrivMessage;
 import birch.irc.domain.BotFeature;
 import birch.irc.domain.TriggerLine;
 
 @Component
 public class UrlGrabber implements BotFeature {
-    private static final String LASTURLS = "lasturls";
+    private static final String LASTURL = "lasturl";
     Logger log = Logger.getLogger(UrlGrabber.class);
     private List<String> triggers;
     private List<Url> urls;
@@ -24,7 +24,7 @@ public class UrlGrabber implements BotFeature {
     public UrlGrabber() {
         triggers = new ArrayList<String>();
         urls = new ArrayList<Url>();
-        triggers.add(LASTURLS);
+        triggers.add(LASTURL);
     }
 
     @Override
@@ -41,6 +41,10 @@ public class UrlGrabber implements BotFeature {
     public String handle(String line) {
         urls.addAll(getUrlsFromRow(line));
         return null;
+    }
+
+    public List<Url> getUrls() {
+        return urls;
     }
 
     public List<Url> getUrlsFromRow(String row) {
@@ -66,31 +70,48 @@ public class UrlGrabber implements BotFeature {
 
             url.setUrl(matcher.group());
             result.add(url);
+            log.info("Adding url: " + url.getUrl());
         }
         return result;
     }
 
-    private Url createMetaDataUrl(String row) {
-        Pattern pattern = Pattern
-                .compile(":(.+)\\!.+@(.+)\\ PRIVMSG (.+) :(.+)");
-        Matcher matcher = pattern.matcher(row);
-        if (!matcher.find())
-            return null;
+    private Url createMetaDataUrl(String line) {
+        IrcPrivMessage priv = IrcPrivMessage.fromLine(line);
 
         Url url = new Url();
-        url.setChannel(matcher.group(3));
-        url.setServer(matcher.group(2));
-        url.setNick(matcher.group(1));
+        url.setFrom(priv.getFrom());
+        url.setTo(priv.getReceiver());
         url.setDate(new Date());
         return url;
     }
 
     @Override
     public String handle(TriggerLine triggerLine) {
-        if (LASTURLS.equals(triggerLine.getTrigger())) {
-            IrcPrivMessage priv = triggerLine.getIrcPrivMessage();
-            return IrcMessage.sendPrivMessage(priv.getReceiver(), urls.get(urls.size() - 1).getUrl());
+        switch (triggerLine.getTrigger()) {
+        case LASTURL:
+            return lastUrl(triggerLine);
+        default:
+            return null;
         }
-        return null;
+    }
+
+    /**
+     * Return last posted url in channel
+     * 
+     * @param triggerLine
+     * @return
+     */
+    private String lastUrl(TriggerLine triggerLine) {
+        IrcPrivMessage priv = triggerLine.getIrcPrivMessage();
+
+        System.out.println(priv.getFrom());
+        Url url = urls.stream()
+                .filter(u -> u.getTo().equals(priv.getReceiver()))
+                .reduce((u1, u2) -> u1.getDate().after(u2.getDate()) ? u1 : u2).get();
+
+        // User res = users.stream().filter(user ->
+        // user.name.equals("apa")).reduce((u, t) -> u.date.after(t.date) ? u :
+        // t).get();
+        return IrcCommandMessage.sendPrivMessage(priv.getReceiver(), url.getUrl());
     }
 }

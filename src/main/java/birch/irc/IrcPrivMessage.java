@@ -64,4 +64,10 @@ public class IrcPrivMessage {
             return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return "IrcPrivMessage [receiver=" + receiver + ", message=" + message
+                + ", from=" + from + ", hostname=" + hostname + "]";
+    }
 }

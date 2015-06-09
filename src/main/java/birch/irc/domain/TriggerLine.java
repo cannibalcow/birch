@@ -38,4 +38,12 @@ public class TriggerLine {
 
         return new TriggerLine(matcher.group(1), privmsg);
     }
+
+    @Override
+    public String toString() {
+        return "TriggerLine [trigger=" + trigger + ", ircPrivMessage="
+                + ircPrivMessage + "]";
+    }
+    
+    
 }

@@ -2,9 +2,9 @@ package birch.irc;
 
 import java.text.MessageFormat;
 
-public class IrcMessage {
+public class IrcCommandMessage {
 
-    private IrcMessage() {
+    private IrcCommandMessage() {
     }
 
     public static String registerNick(String nick) {
