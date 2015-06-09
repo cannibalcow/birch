@@ -7,6 +7,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
 
 import birch.irc.IrcCommandMessage;
@@ -20,8 +23,11 @@ public class UrlGrabber implements BotFeature {
     Logger log = Logger.getLogger(UrlGrabber.class);
     private List<String> triggers;
     private List<Url> urls;
+    private UrlRepository repo;
 
-    public UrlGrabber() {
+    @Autowired
+    public UrlGrabber(UrlRepository repository) {
+        this.repo = repository;
         triggers = new ArrayList<String>();
         urls = new ArrayList<Url>();
         triggers.add(LASTURL);
@@ -39,7 +45,7 @@ public class UrlGrabber implements BotFeature {
 
     @Override
     public String handle(String line) {
-        urls.addAll(getUrlsFromRow(line));
+        repo.save(getUrlsFromRow(line));
         return null;
     }
 
@@ -79,9 +85,10 @@ public class UrlGrabber implements BotFeature {
         IrcPrivMessage priv = IrcPrivMessage.fromLine(line);
 
         Url url = new Url();
-        url.setFrom(priv.getFrom());
-        url.setTo(priv.getReceiver());
+        url.setNick(priv.getFrom());
+        url.setChannel(priv.getReceiver().replaceAll("#", ""));
         url.setDate(new Date());
+        url.setMessage(priv.getMessage());
         return url;
     }
 
@@ -103,15 +110,16 @@ public class UrlGrabber implements BotFeature {
      */
     private String lastUrl(TriggerLine triggerLine) {
         IrcPrivMessage priv = triggerLine.getIrcPrivMessage();
+        PageRequest page = new PageRequest(0, 1, Direction.DESC, "date");
 
-        System.out.println(priv.getFrom());
-        Url url = urls.stream()
-                .filter(u -> u.getTo().equals(priv.getReceiver()))
-                .reduce((u1, u2) -> u1.getDate().after(u2.getDate()) ? u1 : u2).get();
+        String channel = priv.getReceiver().replaceAll("#", "");
+        List<Url> url = repo.findLastUrlByChannel(channel, page);
 
-        // User res = users.stream().filter(user ->
-        // user.name.equals("apa")).reduce((u, t) -> u.date.after(t.date) ? u :
-        // t).get();
-        return IrcCommandMessage.sendPrivMessage(priv.getReceiver(), url.getUrl());
+        if (url != null && url.size() > 0) {
+            return IrcCommandMessage.sendPrivMessage(priv.getReceiver(), url
+                    .get(0).getUrl());
+        } else {
+            return null;
+        }
     }
 }

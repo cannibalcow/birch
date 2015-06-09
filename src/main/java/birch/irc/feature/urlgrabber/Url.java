@@ -1,20 +1,54 @@
 package birch.irc.feature.urlgrabber;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Url {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-    private String from;
+@Entity
+public class Url implements Serializable {
+    private static final long serialVersionUID = -4245757507490003947L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @Column(nullable = false)
+    private String nick;
+
+    @Column(nullable = false)
     private String url;
-    private String to;
+
+    @Column(nullable = false)
+    private String channel;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     private Date date;
 
-    public String getFrom() {
-        return from;
+    @Column
+    private String message;
+
+    public Long getId() {
+        return id;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNick() {
+        return nick;
+    }
+
+    public void setNick(String nick) {
+        this.nick = nick;
     }
 
     public String getUrl() {
@@ -25,12 +59,12 @@ public class Url {
         this.url = url;
     }
 
-    public String getTo() {
-        return to;
+    public String getChannel() {
+        return channel;
     }
 
-    public void setTo(String to) {
-        this.to = to;
+    public void setChannel(String channel) {
+        this.channel = channel;
     }
 
     public Date getDate() {
@@ -41,10 +75,24 @@ public class Url {
         this.date = date;
     }
 
-    @Override
-    public String toString() {
-        return "Url [from=" + from + ", url=" + url + ", to=" + to + ", date="
-                + date + "]";
+    public String getMessage() {
+        return message;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    @Override
+    public String toString() {
+        return "Url [id=" + id + ", nick=" + nick + ", url=" + url
+                + ", channel=" + channel + ", date=" + date + ", message="
+                + message + "]";
+    }
+
+  
 }
