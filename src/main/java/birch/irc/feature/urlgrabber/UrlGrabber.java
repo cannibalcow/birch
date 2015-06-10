@@ -44,7 +44,7 @@ public class UrlGrabber implements BotFeature {
     }
 
     @Override
-    public String handle(String line) {
+    public String handle(String server, String line) {
         repo.save(getUrlsFromRow(line));
         return null;
     }
@@ -93,7 +93,7 @@ public class UrlGrabber implements BotFeature {
     }
 
     @Override
-    public String handle(TriggerLine triggerLine) {
+    public String handle(String server, TriggerLine triggerLine) {
         switch (triggerLine.getTrigger()) {
         case LASTURL:
             return lastUrl(triggerLine);

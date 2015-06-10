@@ -37,12 +37,12 @@ public class TwitterFeature implements BotFeature{
     }
 
     @Override
-    public String handle(String line) {
+    public String handle(String server, String line) {
         return null;
     }
 
     @Override
-    public String handle(TriggerLine triggerLine) {
+    public String handle(String server, TriggerLine triggerLine) {
         if(TWEET.equals(triggerLine.getTrigger())) {
             IrcPrivMessage priv = triggerLine.getIrcPrivMessage();
             String tweet = triggerLine.getMessageWithoutTrigger();

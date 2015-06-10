@@ -84,7 +84,7 @@ public class IrcConnection implements Connection, Runnable {
                     registerd = true;
                 }
 
-                analyzer.analyzeAndHandle(line, writer);
+                analyzer.analyzeAndHandle(server, line, writer);
 
             } catch (IOException e) {
                 e.printStackTrace();

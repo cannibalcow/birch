@@ -22,17 +22,15 @@ public class IrcLineAnalyzer {
         this.features = features;
     }
 
-    public void analyzeAndHandle(String line, PrintWriter writer) {
+    public void analyzeAndHandle(String server, String line, PrintWriter writer) {
         IrcPrivMessage parsedLine = IrcPrivMessage.fromLine(line);
         List<String> responses = new ArrayList<String>();
 
         if (parsedLine != null && isTriggerLine(parsedLine.getMessage())) {
             TriggerLine triggerLine = TriggerLine.fromPrivMsg(parsedLine);
-            log.info("Handling trigger " + triggerLine.getTrigger() + " line: "
-                    + line);
-            responses.addAll(features.handleLineByTrigger(triggerLine));
+            responses.addAll(features.handleLineByTrigger(server, triggerLine));
         } else {
-            List<String> res = features.handleAllLines(line);
+            List<String> res = features.handleAllLines(server, line);
             if (res.size() > 0)
                 responses.addAll(res);
         }

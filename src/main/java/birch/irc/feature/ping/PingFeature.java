@@ -24,7 +24,7 @@ public class PingFeature implements BotFeature {
     }
 
     @Override
-    public String handle(String line) {
+    public String handle(String server, String line) {
         if (isPing(line)) {
             return IrcCommandMessage.pongReply(line);
         } else {
@@ -33,7 +33,7 @@ public class PingFeature implements BotFeature {
     }
 
     @Override
-    public String handle(TriggerLine triggerLine) {
+    public String handle(String server, TriggerLine triggerLine) {
         return null;
     }
 

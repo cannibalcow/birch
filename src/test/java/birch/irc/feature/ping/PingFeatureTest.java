@@ -24,19 +24,19 @@ public class PingFeatureTest {
 
     @Test
     public void testPing() {
-        String result = pf.handle(PING);
+        String result = pf.handle(null, PING);
         assertThat(result, is(PONG));
     }
 
     @Test
     public void testNotCorrectLine() {
-        String rs = pf.handle("FUBAR");
+        String rs = pf.handle(null, "FUBAR");
         assertThat(rs, is(nullValue()));
     }
     
     @Test
     public void shouldNotHandleTriggers() {
-        String rs = pf.handle(new TriggerLine("trigger", null));
+        String rs = pf.handle(null, new TriggerLine("trigger", null));
         assertThat(rs,  is(nullValue()));
     }
     

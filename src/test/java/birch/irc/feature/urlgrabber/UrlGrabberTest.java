@@ -28,32 +28,32 @@ public class UrlGrabberTest {
 
     @Test
     public void shouldGrabUrl() {
-        ug.handle(URL_LINE_A);
+        ug.handle(null, URL_LINE_A);
 
         assertThat(ug.getUrls().size(), is(1));
     }
     
     @Test
     public void shoulReturnBUrl() {
-        ug.handle(URL_LINE_B);
-        ug.handle(URL_LINE_A);
+        ug.handle(null, URL_LINE_B);
+        ug.handle(null, URL_LINE_A);
         assertThat(ug.getUrls().size(), is(2));
 
         IrcPrivMessage priv = IrcPrivMessage.fromLine(LAST_URL_LINE_B);
         TriggerLine trigger = TriggerLine.fromPrivMsg(priv);
-        String res = ug.handle(trigger);
+        String res = ug.handle(null, trigger);
         assertThat(res, is(PRIVMSG_B));
     }
     
     @Test
     public void shoulReturnAUrl() {
-        ug.handle(URL_LINE_B);
-        ug.handle(URL_LINE_A);
+        ug.handle(null, URL_LINE_B);
+        ug.handle(null, URL_LINE_A);
         assertThat(ug.getUrls().size(), is(2));
 
         IrcPrivMessage priv = IrcPrivMessage.fromLine(LAST_URL_LINE_A);
         TriggerLine trigger = TriggerLine.fromPrivMsg(priv);
-        String res = ug.handle(trigger);
+        String res = ug.handle(null, trigger);
         assertThat(res, is(PRIVMSG_A));
     }
 }

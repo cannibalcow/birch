@@ -18,14 +18,14 @@ public class Features {
     @Autowired
     private List<BotFeature> features;
 
-    public List<String> handleLineByTrigger(TriggerLine triggerLine) {
+    public List<String> handleLineByTrigger(String server, TriggerLine triggerLine) {
         List<String> responses = new ArrayList<String>();
 
         Stream<BotFeature> fs = features.stream().filter(
                 f -> f.triggers().contains(triggerLine.getTrigger()));
         fs.forEach(feature -> {
             log.info("FEATURE IS HANDLING: " + feature.getClass());
-            String response = feature.handle(triggerLine);
+            String response = feature.handle(server, triggerLine);
 
             if (response != null) {
                 responses.add(response);
@@ -35,12 +35,12 @@ public class Features {
         return responses;
     }
 
-    public List<String> handleAllLines(String line) {
+    public List<String> handleAllLines(String server, String line) {
         List<String> responses = new ArrayList<String>();
 
         features.stream().filter(f -> f.triggerOnAllLines() == true)
                 .forEach(feature -> {
-                    String response = feature.handle(line);
+                    String response = feature.handle(server, line);
                     if (response != null)
                         responses.add(response);
                 });
