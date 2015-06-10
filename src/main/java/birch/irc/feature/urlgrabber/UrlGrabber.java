@@ -84,6 +84,10 @@ public class UrlGrabber implements BotFeature {
     private Url createMetaDataUrl(String line) {
         IrcPrivMessage priv = IrcPrivMessage.fromLine(line);
 
+        if(priv == null) {
+            return null;
+        }
+        
         Url url = new Url();
         url.setNick(priv.getFrom());
         url.setChannel(priv.getReceiver().replaceAll("#", ""));
