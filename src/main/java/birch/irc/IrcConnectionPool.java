@@ -73,11 +73,17 @@ public class IrcConnectionPool implements ConnectionPool {
     private Map<String, Object> createStatusInfo(IrcConnection con) {
         Map<String, Object> status = new HashMap<String, Object>();
         status.put("uuid", con.getUUID().toString());
-        status.put("user", con.getUser());
+        status.put("nick", con.getNick());
         status.put("server", con.getServer());
         status.put("isConnected", con.isConnected());
         status.put("isRegisterd", con.isRegisterd());
+        status.put("channels", con.getChannels());
         return status;
+    }
+
+    public void join(UUID uuid, String channel, String password) {
+        Connection con = getConnection(uuid);
+        con.join(channel, password);
     }
 
     

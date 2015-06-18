@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import birch.irc.IrcConnection;
 import birch.irc.IrcConnectionPool;
 import birch.irc.IrcLineAnalyzer;
-import birch.irc.IrcCommandMessage;
 import birch.irc.domain.Connection;
 
 @RestController
@@ -53,7 +52,7 @@ public class IrcController {
     public void joinChannelWithPassword(@PathVariable String uuid,
             @PathVariable String channel, @PathVariable String password) {
 
-        icp.send(UUID.fromString(uuid),
-                IrcCommandMessage.joinChannel(channel, password));
+        icp.join(UUID.fromString(uuid), channel, password);
+       
     }
 }

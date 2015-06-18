@@ -45,7 +45,7 @@ public class UrlGrabber implements BotFeature {
 
     @Override
     public String handle(String server, String line) {
-        repo.save(getUrlsFromRow(line));
+        repo.save(getUrlsFromRow(server, line));
         return null;
     }
 
@@ -53,7 +53,7 @@ public class UrlGrabber implements BotFeature {
         return urls;
     }
 
-    public List<Url> getUrlsFromRow(String row) {
+    public List<Url> getUrlsFromRow(String server, String row) {
         Pattern pattern = Pattern
                 .compile("\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)"
                         + "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov"
@@ -70,7 +70,7 @@ public class UrlGrabber implements BotFeature {
         List<Url> result = new ArrayList<Url>();
 
         while (matcher.find()) {
-            Url url = createMetaDataUrl(row);
+            Url url = createMetaDataUrl(row, server);
             if (url == null)
                 return result;
 
@@ -81,7 +81,7 @@ public class UrlGrabber implements BotFeature {
         return result;
     }
 
-    private Url createMetaDataUrl(String line) {
+    private Url createMetaDataUrl(String line, String server) {
         IrcPrivMessage priv = IrcPrivMessage.fromLine(line);
 
         if(priv == null) {
@@ -93,6 +93,7 @@ public class UrlGrabber implements BotFeature {
         url.setChannel(priv.getReceiver().replaceAll("#", ""));
         url.setDate(new Date());
         url.setMessage(priv.getMessage());
+        url.setServer(server);
         return url;
     }
 

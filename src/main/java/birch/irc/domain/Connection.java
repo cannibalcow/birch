@@ -7,4 +7,5 @@ public interface Connection {
     void connect();
     UUID getUUID();
     void send(String data);
+    void join(String channel, String password);
 }

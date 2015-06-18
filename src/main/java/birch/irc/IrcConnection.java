@@ -7,12 +7,15 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.MessageFormat;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import birch.irc.domain.Connection;
 
+// Todo. rewrite this shit
 public class IrcConnection implements Connection, Runnable {
     Logger log = Logger.getLogger(IrcConnection.class);
     private UUID uuid;
@@ -27,6 +30,15 @@ public class IrcConnection implements Connection, Runnable {
     private String realName;
     private Integer mode = 0;
     private IrcLineAnalyzer analyzer;
+    private Set<String> channels = new HashSet<String>();
+
+    public Set<String> getChannels() {
+        return channels;
+    }
+
+    public void setChannels(Set<String> channels) {
+        this.channels = channels;
+    }
 
     public UUID getUuid() {
         return uuid;
@@ -157,5 +169,11 @@ public class IrcConnection implements Connection, Runnable {
     public void send(String data) {
         log.info(MessageFormat.format("sending: {0}", data));
         writer.println(data);
+    }
+
+    @Override
+    public void join(String channel, String password) {
+        send(IrcCommandMessage.joinChannel(channel, password));
+        channels.add(channel);
     }
 }

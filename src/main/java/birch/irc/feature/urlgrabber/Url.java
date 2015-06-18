@@ -34,6 +34,9 @@ public class Url implements Serializable {
 
     @Column
     private String message;
+    
+    @Column(nullable = false) 
+    private String server;
 
     public Long getId() {
         return id;
@@ -87,12 +90,18 @@ public class Url implements Serializable {
         return serialVersionUID;
     }
 
+    public String getServer() {
+        return server;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
+    }
+
     @Override
     public String toString() {
         return "Url [id=" + id + ", nick=" + nick + ", url=" + url
                 + ", channel=" + channel + ", date=" + date + ", message="
-                + message + "]";
+                + message + ", server=" + server + "]";
     }
-
-  
 }
