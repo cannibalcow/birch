@@ -6,15 +6,17 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-
-import com.google.common.collect.ImmutableList;
 
 import birch.irc.IrcPrivMessage;
 import birch.irc.domain.BotFeature;
 import birch.irc.domain.TriggerLine;
 
+import com.google.common.collect.ImmutableList;
+
 @Component
+@Profile("dblog")
 public class LogFeature implements BotFeature {
 
     private IrcLogServerRepository serverRepo;

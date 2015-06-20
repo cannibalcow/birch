@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import birch.irc.domain.BotFeature;
 import birch.irc.domain.TriggerLine;
 
 @Component
+@Profile("urlgrabber")
 public class UrlGrabber implements BotFeature {
     private static final String LASTURL = "lasturl";
     Logger log = Logger.getLogger(UrlGrabber.class);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import birch.irc.domain.BotFeature;
 import birch.irc.domain.TriggerLine;
 
 @Component
+@Profile("twitter")
 public class TwitterFeature implements BotFeature{
     private static final String TWEET = "tweet";
     private Twitter twitter;
