@@ -1,6 +1,8 @@
-# birch
-Irc bot written in Java. Nothing is done.
+[![Build Status](https://travis-ci.org/cannibalcow/birch.svg?branch=master)](https://travis-ci.org/cannibalcow/birch)
 
-## Features
+# birch
+Irc bot written in Java using Spring boot
+
+## Current features
 	- Twitter trigger
 	- Url grabber
