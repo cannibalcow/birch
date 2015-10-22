@@ -8,8 +8,10 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 
 public class AvanzaScaper {
-
     Logger log = Logger.getLogger(AvanzaScaper.class);
+
+    private static final String TOTAL_CURRENCY = "#surface > div:nth-child(4) > div.column.grid_5 > div:nth-child(2) > div > div > div.tRight.bold";
+    private static final String TOTAL_VALUE_TRADED = "#surface > div:nth-child(4) > div.column.grid_5 > div:nth-child(2) > div > div > div.tRight.bold > span";
     private static final String TOTAL_VOLUME = "#surface > div:nth-child(2) > div > div > div > div > ul > li:nth-child(9) > span.totalVolumeTraded.SText.bold";
     private static final String UTV_IDAG_SEK_PATH = "#surface > div:nth-child(2) > div > div > div > div > ul > li:nth-child(3) > div > span.change.SText.bold.negative";
     private static final String UTV_IDAG_PERCENT_CSS_PATH = "#surface > div:nth-child(2) > div > div > div > div > ul > li:nth-child(2) > div:nth-child(2) > span.changePercent.SText.bold.negative";
@@ -37,12 +39,24 @@ public class AvanzaScaper {
             setLowestPrice(doc, stockInfo);
             setTotalVolume(doc, stockInfo);
             setUptade(doc, stockInfo);
+            setTotalValueTraded(doc, stockInfo);
             return stockInfo;
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    private void setTotalValueTraded(Document doc, StockInfo stockInfo) {
+        Elements cur = doc.select(TOTAL_CURRENCY);
+
+        if (cur.size() == 0) {
+            log.info("did not find anything");
+            return;
+        }
+
+        stockInfo.setTotalValueTraded(cur.get(0).text());
     }
 
     private void setUptade(Document doc, StockInfo stockInfo) {
