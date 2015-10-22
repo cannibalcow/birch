@@ -1,48 +1,33 @@
 package birch.irc.feature.urlgrabber;
 
+import org.springframework.data.annotation.Id;
+
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-@Entity
 public class Url implements Serializable {
     private static final long serialVersionUID = -4245757507490003947L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false)
     private String nick;
 
-    @Column(nullable = false)
     private String url;
 
-    @Column(nullable = false)
     private String channel;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
     private Date date;
 
-    @Column
     private String message;
-    
-    @Column(nullable = false) 
+
     private String server;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

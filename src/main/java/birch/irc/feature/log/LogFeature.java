@@ -1,32 +1,25 @@
 package birch.irc.feature.log;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
+import birch.irc.IrcPrivMessage;
+import birch.irc.domain.BotFeature;
+import birch.irc.domain.TriggerLine;
+import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import birch.irc.IrcPrivMessage;
-import birch.irc.domain.BotFeature;
-import birch.irc.domain.TriggerLine;
-
-import com.google.common.collect.ImmutableList;
+import java.util.Date;
+import java.util.List;
 
 @Component
 @Profile("dblog")
 public class LogFeature implements BotFeature {
 
-    private IrcLogServerRepository serverRepo;
-    private IrcLogRepository logRepo;
+    private IrcLogLineRepository logRepo;
 
     @Autowired
-    public LogFeature(IrcLogRepository logRepo,
-            IrcLogServerRepository serverRepository) {
-        this.logRepo = logRepo;
-        this.serverRepo = serverRepository;
+    public LogFeature(IrcLogLineRepository logRepository) {
+        this.logRepo = logRepository;
     }
 
     @Override
@@ -40,7 +33,6 @@ public class LogFeature implements BotFeature {
     }
 
     @Override
-    @Transactional
     public String handle(String server, String line) {
         IrcPrivMessage priv = IrcPrivMessage.fromLine(line);
 
@@ -48,21 +40,13 @@ public class LogFeature implements BotFeature {
             return null;
         }
 
-        IrcLogServer ircServer = serverRepo.findByServer(server);
-
-        if (ircServer == null) {
-            ircServer = new IrcLogServer();
-            ircServer.setServer(server);
-            serverRepo.save(ircServer);
-        }
 
         IrcLogLine log = new IrcLogLine();
         log.setChannel(priv.getReceiver().replaceAll("#", ""));
-        log.setIrcLogServer(ircServer);
         log.setMessage(priv.getMessage());
         log.setNick(priv.getFrom());
         log.setTimestamp(new Date());
-
+        log.setServer(server);
         logRepo.save(log);
 
         return null;

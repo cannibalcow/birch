@@ -1,11 +1,9 @@
 package birch.irc.feature.urlgrabber;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import birch.irc.IrcCommandMessage;
+import birch.irc.IrcPrivMessage;
+import birch.irc.domain.BotFeature;
+import birch.irc.domain.TriggerLine;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -13,10 +11,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
 
-import birch.irc.IrcCommandMessage;
-import birch.irc.IrcPrivMessage;
-import birch.irc.domain.BotFeature;
-import birch.irc.domain.TriggerLine;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 @Profile("urlgrabber")
@@ -86,10 +85,10 @@ public class UrlGrabber implements BotFeature {
     private Url createMetaDataUrl(String line, String server) {
         IrcPrivMessage priv = IrcPrivMessage.fromLine(line);
 
-        if(priv == null) {
+        if (priv == null) {
             return null;
         }
-        
+
         Url url = new Url();
         url.setNick(priv.getFrom());
         url.setChannel(priv.getReceiver().replaceAll("#", ""));
@@ -102,16 +101,16 @@ public class UrlGrabber implements BotFeature {
     @Override
     public String handle(String server, TriggerLine triggerLine) {
         switch (triggerLine.getTrigger()) {
-        case LASTURL:
-            return lastUrl(triggerLine);
-        default:
-            return null;
+            case LASTURL:
+                return lastUrl(triggerLine);
+            default:
+                return null;
         }
     }
 
     /**
      * Return last posted url in channel
-     * 
+     *
      * @param triggerLine
      * @return
      */
