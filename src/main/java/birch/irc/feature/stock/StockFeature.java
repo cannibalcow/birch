@@ -4,26 +4,29 @@ import birch.irc.IrcCommandMessage;
 import birch.irc.domain.BotFeature;
 import birch.irc.domain.TriggerLine;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class StockFeature implements BotFeature {
     private final AvanzaScaper avanza;
+    private final StockRepository stockRepo;
     Logger log = Logger.getLogger(StockFeature.class);
+    private static final String STOCKS = "stocks";
     private static final String STOCK_REQUEST = "stock";
     private static final String STOCK_REGISTER = "register_stock";
+    private static final String STOCK_DELETE = "delete_stock";
     private List<String> triggers;
-    private Map<String, Stock> stocks = new HashMap<>();
 
-
-    public StockFeature() {
+    @Autowired
+    public StockFeature(StockRepository stockRepo) {
         this.avanza = new AvanzaScaper();
-        this.triggers = Arrays.asList(STOCK_REQUEST, STOCK_REGISTER);
+        this.stockRepo = stockRepo;
+        this.triggers = Arrays.asList(STOCK_REQUEST, STOCK_REGISTER, STOCK_DELETE, STOCKS);
     }
 
     @Override
@@ -41,20 +44,50 @@ public class StockFeature implements BotFeature {
         return null;
     }
 
-    public Map<String, Stock> getStocks() {
-        return stocks;
-    }
-
     @Override
     public String handle(String server, TriggerLine triggerLine) {
-        if (STOCK_REQUEST.equals(triggerLine.getTrigger())) {
-            return stockInfo(triggerLine);
+        String trigger = triggerLine.getTrigger();
+        switch (trigger) {
+            case STOCK_REQUEST:
+                return stockInfo(triggerLine);
+            case STOCK_REGISTER:
+                return registerStock(triggerLine);
+            case STOCK_DELETE:
+                return deleteStock(triggerLine);
+            case STOCKS:
+                return stocks(triggerLine);
+            default:
+                return null;
+        }
+    }
+
+    private String stocks(TriggerLine triggerLine) {
+        String receiver = triggerLine.getIrcPrivMessage().getReceiver();
+        List<Stock> stocks = stockRepo.fetchStocks();
+        if(stocks == null || stocks.isEmpty()) {
+            return null;
         }
 
-        if (STOCK_REGISTER.equals(triggerLine.getTrigger())) {
-            return registerStock(triggerLine);
+        List<String> aliases = stocks.stream().map(Stock::getAlias).collect(Collectors.toList());
+
+        return IrcCommandMessage.sendPrivMessage(receiver, String.join(", ", aliases));
+    }
+
+    private String deleteStock(TriggerLine triggerLine) {
+        String alias = triggerLine.getMessageWithoutTrigger();
+        String receiver = triggerLine.getIrcPrivMessage().getReceiver();
+
+        if(stockRepo.stockExists(alias)) {
+            Stock mongoStock = stockRepo.getStock(alias);
+            stockRepo.deleteStock(mongoStock);
+            return IrcCommandMessage.sendPrivMessage(receiver, String.format("stock alias '%s' deleted'", alias));
+        } else {
+            return IrcCommandMessage.sendPrivMessage(receiver, String.format("stock alias '%s' does not exist'", alias));
         }
-        return null;
+    }
+
+    private String help(String receiver) {
+        return IrcCommandMessage.sendPrivMessage(receiver, "Triggers: !stock, !register_stock <url> <alias>, !delete_stock <alias>");
     }
 
     private String registerStock(TriggerLine triggerLine) {
@@ -62,21 +95,27 @@ public class StockFeature implements BotFeature {
         String receiver = triggerLine.getIrcPrivMessage().getReceiver();
         Stock stock = splitMessageToRegisterMap(triggerLine.getIrcPrivMessage().getMessage());
 
-        if(stocks.containsKey(stock.getAlias())) {
-            return IrcCommandMessage.sendPrivMessage(receiver, "stock already added... duuhh");
+        if(stock == null) {
+            return IrcCommandMessage.sendPrivMessage(receiver, "Could not register stock...");
+        }
+
+        if(stockRepo.stockExists(stock.getAlias())) {
+            Stock mongoStock = stockRepo.getStock(stock.getAlias());
+            mongoStock.setUrl(stock.getUrl());
+            stockRepo.save(mongoStock);
+            return IrcCommandMessage.sendPrivMessage(receiver, String.format("stock '%s' updated with new url", mongoStock.getAlias()));
         } else {
-            stocks.put(stock.getAlias(), stock);
+            stockRepo.save(stock);
             return IrcCommandMessage.sendPrivMessage(receiver, String.format("Added the stock url %s with alias '%s'", stock.getUrl(), stock.getAlias()));
         }
     }
 
     private String stockInfo(TriggerLine triggerLine) {
         String alias = triggerLine.getMessageWithoutTrigger();
-        Stock stock;
-        if(stocks.containsKey(alias)) {
-            stock = stocks.get(alias);
-        } else {
-            return null;
+        Stock stock = stockRepo.getStock(alias);
+
+        if(stock == null) {
+            return help(triggerLine.getIrcPrivMessage().getReceiver());
         }
 
         String receiver = triggerLine.getIrcPrivMessage().getReceiver();

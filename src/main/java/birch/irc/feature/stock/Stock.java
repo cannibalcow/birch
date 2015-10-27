@@ -1,10 +1,11 @@
 package birch.irc.feature.stock;
 
-/**
- * Created by heldt on 2015-10-22.
- */
+import org.springframework.data.annotation.Id;
+
 public class Stock {
+
     private String url;
+    @Id
     private String alias;
 
     public String getUrl() {

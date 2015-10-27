@@ -1,14 +1,13 @@
 package birch.irc.feature.urlgrabber;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
+import birch.irc.IrcPrivMessage;
+import birch.irc.domain.TriggerLine;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import birch.irc.IrcPrivMessage;
-import birch.irc.domain.TriggerLine;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @Ignore
 public class UrlGrabberTest {

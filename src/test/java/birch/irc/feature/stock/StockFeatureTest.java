@@ -1,19 +1,29 @@
 package birch.irc.feature.stock;
 
+import birch.BirchApplication;
 import birch.irc.IrcPrivMessage;
 import birch.irc.domain.TriggerLine;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = BirchApplication.class)
 public class StockFeatureTest {
     private final String REGISTER_SUCCES = "PRIVMSG #a :mkay.. I have registererdrd the stock url https://www.avanza.se/aktier/om-aktien.html/264113/wntresearch with alias wnt";
     private final String REGISER_FAIL = "PRIVMSG #a :stock already registeredeedd... duuhh";
 
+    @Autowired
+    private StockRepository repo;
+
     @Test
     @Ignore
     public void registerTest() {
-        StockFeature sf = new StockFeature();
+        StockFeature sf = new StockFeature(repo);
         IrcPrivMessage privMsg = new IrcPrivMessage("heldt", "heldt@0::1", "#a", "!stock_register https://www.avanza.se/aktier/om-aktien.html/264113/wntresearch wnt");
         TriggerLine t1 = new TriggerLine("register_stock", privMsg);
 
@@ -23,15 +33,14 @@ public class StockFeatureTest {
         String result = sf.handle("server", t1);
         String result2 = sf.handle("server", t2);
 
-//        Assert.assertEquals(result, REGISTER_SUCCES);
-//        Assert.assertEquals(result2, REGISTER_SUCCES);
-        Assert.assertEquals(sf.getStocks().size(), 2);
+        Assert.assertEquals(result, REGISTER_SUCCES);
+        Assert.assertEquals(result2, REGISTER_SUCCES);
     }
 
     @Test
     @Ignore
     public void stockTest() {
-        StockFeature sf = new StockFeature();
+        StockFeature sf = new StockFeature(repo);
         IrcPrivMessage registerMessage = new IrcPrivMessage("heldt", "heldt@0::1", "#a", "!stock_register https://www.avanza.se/aktier/om-aktien.html/5479/teliasonera wnt");
         TriggerLine register = new TriggerLine("register_stock", registerMessage);
 
