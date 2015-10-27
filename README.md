@@ -6,3 +6,4 @@ Irc bot written in Java using Spring boot
 ## Current features
 	- Twitter trigger
 	- Url grabber
+	- Stock market feature
