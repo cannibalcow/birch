@@ -35,11 +35,11 @@ public class IrcCommandMessage {
         return String.format("USER %s %d %s :%s", user, mode, unused, realName);
     }
 
-    public static String joinChannel(String channel, String password) {
-        if (password != null) {
-            return String.format("JOIN #%s %s", channel, password);
+    public static String joinChannel(IrcChannel channel) {
+        if (channel.getPassword() != null) {
+            return String.format("JOIN #%s %s", channel.getChannel(), channel.getPassword());
         } else {
-            return String.format("JOIN #%s", channel);
+            return String.format("JOIN #%s", channel.getChannel());
         }
     }
 

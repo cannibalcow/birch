@@ -1,27 +1,43 @@
 package birch.irc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Component;
-
 import birch.irc.domain.Connection;
 import birch.irc.domain.ConnectionPool;
+import org.apache.log4j.Logger;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
 
 @Component
+@EnableScheduling
 public class IrcConnectionPool implements ConnectionPool {
     Logger log = Logger.getLogger(IrcConnectionPool.class);
     private Set<Connection> connections;
 
     public IrcConnectionPool() {
         this.connections = new HashSet<Connection>();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void checkConnections() {
+        System.out.println("checking Connection");
+
+        connections.forEach(con -> {
+            // Check connection own health
+            IrcConnectionState connectionState = con.getState();
+            System.out.println("StatE: " + connectionState);
+            if(connectionState == IrcConnectionState.DISCONNECTED) {
+                System.out.println("RECONNECT!");
+                con.reconnect();
+                return;
+            }
+
+            // check if connection has timed out
+            if(con.connectionTimedOut()) {
+                System.out.println("CONNECTION HAS TIMED OUT!");
+            }
+        });
     }
 
     @Override
@@ -75,7 +91,7 @@ public class IrcConnectionPool implements ConnectionPool {
         status.put("uuid", con.getUUID().toString());
         status.put("nick", con.getNick());
         status.put("server", con.getServer());
-        status.put("isConnected", con.isConnected());
+        status.put("state", con.getConnectionState());
         status.put("isRegisterd", con.isRegisterd());
         status.put("channels", con.getChannels());
         return status;

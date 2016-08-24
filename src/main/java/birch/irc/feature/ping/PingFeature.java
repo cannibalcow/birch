@@ -1,14 +1,12 @@
 package birch.irc.feature.ping;
 
-import java.util.List;
-
-import org.springframework.stereotype.Component;
-
 import birch.irc.IrcCommandMessage;
 import birch.irc.domain.BotFeature;
 import birch.irc.domain.TriggerLine;
-
 import com.google.common.collect.ImmutableList;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class PingFeature implements BotFeature {
@@ -37,7 +35,7 @@ public class PingFeature implements BotFeature {
         return null;
     }
 
-    private boolean isPing(String line) {
+    public static boolean isPing(String line) {
         if (line.startsWith("PING")) {
             return true;
         } else {
